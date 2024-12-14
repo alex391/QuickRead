@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                         Button(
-                            onClick = {},
+                            onClick = {/* TODO: goto the reading page */ },
                             content = {
                                 Text("Start reading!")
                             }
