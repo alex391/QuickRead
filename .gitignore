@@ -31,3 +31,10 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Other artifacts
+android/
+caches/
+daemon/
+native/
+wrapper/
