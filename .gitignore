@@ -38,3 +38,4 @@ caches/
 daemon/
 native/
 wrapper/
+kotlin-profile/
