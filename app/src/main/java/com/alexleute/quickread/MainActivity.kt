@@ -4,13 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,14 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarState
-import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.alexleute.quickread.ui.theme.QuickReadTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,19 +40,47 @@ class MainActivity : ComponentActivity() {
                         ),
                         title = {
                         },
-                        actions =  {
+                        actions = {
                             IconButton(onClick = {
                                 TODO()
                             }) {
-                                Icon(imageVector = Icons.Filled.Menu, contentDescription = null/* TODO */)
+                                Icon(
+                                    imageVector = Icons.Filled.Menu,
+                                    contentDescription = null/* TODO */
+                                )
                             }
                         }
                     )
                 }) { innerPadding ->
-                    Column (modifier = Modifier.padding(innerPadding)) {
-                        TextField("", onValueChange = {}, label = {
-                            Text("test")
-                        })
+                    Column(
+                        modifier = Modifier.padding(innerPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TextField(
+                            "",
+                            modifier = Modifier
+                                .fillMaxHeight(0.5f)
+                                .fillMaxWidth(1f), // TODO: actually center
+                            onValueChange = {/* TODO: change value */ },
+                            label = {
+                                Text("Paste your text here")
+                            }
+                        )
+                        TextField(
+                            "",
+                            modifier = Modifier
+                                .fillMaxWidth(1f), // TODO: actually center
+                            onValueChange = {/* TODO: Store state for later */ },
+                            label = {
+                                Text("Or paste a URL here")
+                            }
+                        )
+                        Button(
+                            onClick = {},
+                            content = {
+                                Text("Start reading!")
+                            }
+                        )
                     }
                 }
             }
