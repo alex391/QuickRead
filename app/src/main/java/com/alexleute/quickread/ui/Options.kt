@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.alexleute.quickread.OptionsStorage
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,13 +53,13 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
                 .fillMaxSize(),
         ) {
             var wpm: Float =
-                (1f / (optionsStorage.delay.inWholeMilliseconds.toFloat() / 1000f)) * 60f
+               msToWpm(optionsStorage.delay.inWholeMilliseconds.toFloat())
             Text("Words Per Minute: $wpm")
             Slider(
                 value = wpm,
                 onValueChange = {
                     wpm = it
-                    val delay: Duration = (6000f / wpm).toDouble().seconds
+                    val delay: Duration = (wpmToMs(wpm)).toDouble().milliseconds
                     val newOptionsStorage = optionsStorage.copy(delay = delay)
                     save(newOptionsStorage)
                 },
@@ -67,4 +67,12 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
             )
         }
     }
+}
+
+fun msToWpm(ms: Float): Float {
+    return 1f / (ms * (1f / 1000f) * (1f / 60f))
+}
+
+fun wpmToMs (wpm: Float): Float {
+    return 1f / (wpm * (1f / 60f) * (1f / 1000f))
 }

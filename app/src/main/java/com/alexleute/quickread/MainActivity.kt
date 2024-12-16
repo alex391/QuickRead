@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            var optionsStorage: OptionsStorage by remember { mutableStateOf(OptionsStorage()) }
             NavHost(
                 navController = navController,
                 startDestination = ImportText,
@@ -61,11 +62,10 @@ class MainActivity : ComponentActivity() {
                         text = args.text,
                         back = { navController.popBackStack() },
                         options = { navController.navigate(Options) },
-                        optionsStorage = OptionsStorage() // TODO: placeholder
+                        optionsStorage = optionsStorage
                     )
                 }
                 composable<Options> {
-                    var optionsStorage: OptionsStorage by remember { mutableStateOf(OptionsStorage()) }
                     Options(back = {
 
                     }, optionsStorage, save = {
