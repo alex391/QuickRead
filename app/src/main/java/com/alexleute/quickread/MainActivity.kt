@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.alexleute.quickread.ui.ImportText
 import com.alexleute.quickread.ui.Read
 import kotlinx.serialization.Serializable
@@ -19,7 +20,7 @@ object ImportText // TODO: This should probably also be a data class
 object Options
 
 @Serializable
-object Read // TODO: This should be a data class instead
+data class Read(val text: String)// TODO: This should be a data class instead
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,14 +34,15 @@ class MainActivity : ComponentActivity() {
             ) {
                 composable<ImportText> {
                     ImportText(startReading = {
-                        navController.navigate(Read)
+                        navController.navigate(Read("Lorem ipsum your princess is in another castle")) // TODO should be the text from the textbox instead
                     }, options = {
                         navController.navigate(Options)
                     })
                 }
                 composable<Read> {
+                    val args = it.toRoute<Read>()
                     Read(
-                        text = TODO(),
+                        text = args.text,
                         back = { navController.popBackStack() },
                         options = { navController.navigate(Options) }
                     )
