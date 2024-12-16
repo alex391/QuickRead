@@ -27,14 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.alexleute.quickread.OptionsStorage
 import kotlinx.coroutines.time.delay
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Read(text: String, back: () -> Unit, options: () -> Unit) {
-    // TODO: This is very placeholder
+fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: OptionsStorage) {
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -86,12 +85,11 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit) {
             // TODO: what to split on could come from settings
 
             var index: Int by remember { mutableIntStateOf(0) }
-            val delay = .2.seconds.toJavaDuration() // TODO: This also should come from settings
             LaunchedEffect(index) {
                 if (index >= split.size - 1) {
                     return@LaunchedEffect
                 }
-                delay(delay)
+                delay(optionsStorage.delay.toJavaDuration())
                 index++
             }
             Text(

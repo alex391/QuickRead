@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,17 +13,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.alexleute.quickread.ui.ImportText
+import com.alexleute.quickread.ui.Options
 import com.alexleute.quickread.ui.Read
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 @Serializable
-object ImportText // TODO: This should probably also be a data class
+object ImportText
 
 @Serializable
 object Options
 
 @Serializable
-data class Read(val text: String)// TODO: This should be a data class instead
+data class Read(val text: String)
+
+data class OptionsStorage(var delay: Duration = 0.2.seconds)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,11 +60,18 @@ class MainActivity : ComponentActivity() {
                     Read(
                         text = args.text,
                         back = { navController.popBackStack() },
-                        options = { navController.navigate(Options) }
+                        options = { navController.navigate(Options) },
+                        optionsStorage = OptionsStorage() // TODO: placeholder
                     )
                 }
                 composable<Options> {
-                    Text("This is placeholder text for Options")
+                    var optionsStorage: OptionsStorage by remember { mutableStateOf(OptionsStorage()) }
+                    Options(back = {
+
+                    }, optionsStorage, save = {
+                        optionsStorage = it
+
+                    })
                 }
             }
         }
