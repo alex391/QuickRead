@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.alexleute.quickread.ui.ImportText
 import com.alexleute.quickread.ui.Options
 import com.alexleute.quickread.ui.Read
@@ -63,7 +62,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 composable<Read> {
-                    val args = it.toRoute<Read>()
                     Read(
                         text = readText,
                         back = { navController.popBackStack() },
