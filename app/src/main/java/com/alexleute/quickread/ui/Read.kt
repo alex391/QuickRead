@@ -26,9 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.alexleute.quickread.OptionsStorage
 import kotlinx.coroutines.time.delay
+import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +80,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                     "3",
                     "2",
                     "1"
-                ) // TODO this could be inserted also on resume
+                ) // TODO this could be inserted also on resume (or done some other way, this is a bit temporary)
             split.addAll(filteredText.split(" "))
             // TODO: what to split on could come from settings
 
@@ -89,13 +89,20 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 if (index >= split.size - 1) {
                     return@LaunchedEffect
                 }
-                delay(optionsStorage.delay.toJavaDuration())
+                if (optionsStorage.longerWordsMoreTime) {
+                    val scale: Double =
+                        split[index].length.toDouble() / 6.0 // Average word length is around 6
+                    val scaledDelay: Duration = optionsStorage.delay.times(scale = scale)
+                    delay(scaledDelay.toJavaDuration())
+                } else {
+                    delay(optionsStorage.delay.toJavaDuration())
+                }
                 index++
             }
             Text(
                 split[index],
                 Modifier.padding(16.dp),
-                fontSize = 60.sp
+                fontSize = optionsStorage.fontSize
             ) // TODO: Font size could be from settings
 
         }

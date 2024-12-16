@@ -8,6 +8,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,9 +28,13 @@ object ImportText
 object Options
 
 @Serializable
-data class Read(val text: String)
+object Read
 
-data class OptionsStorage(var delay: Duration = 0.2.seconds)
+data class OptionsStorage(
+    var delay: Duration = 0.2.seconds,
+    var fontSize: TextUnit = 60.sp,
+    var longerWordsMoreTime: Boolean = false
+)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +42,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            var optionsStorage: OptionsStorage by remember { mutableStateOf(OptionsStorage()) }
+            var optionsStorage: OptionsStorage by remember { mutableStateOf(OptionsStorage()) } // TODO: persistent storage
+            var readText by remember { mutableStateOf("") }
             NavHost(
                 navController = navController,
                 startDestination = ImportText,
             ) {
                 composable<ImportText> {
-                    var readText by remember { mutableStateOf("") }
                     ImportText(
                         startReading = {
-                            navController.navigate(Read(readText)) // TODO should be the text from the textbox instead
+                            navController.navigate(Read)
                         },
                         options = {
                             navController.navigate(Options)
@@ -59,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 composable<Read> {
                     val args = it.toRoute<Read>()
                     Read(
-                        text = args.text,
+                        text = readText,
                         back = { navController.popBackStack() },
                         options = { navController.navigate(Options) },
                         optionsStorage = optionsStorage
@@ -67,10 +73,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable<Options> {
                     Options(back = {
-
+                        navController.popBackStack()
                     }, optionsStorage, save = {
                         optionsStorage = it
-
                     })
                 }
             }
