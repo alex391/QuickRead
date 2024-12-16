@@ -2,13 +2,21 @@ package com.alexleute.quickread.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,13 +29,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alexleute.quickread.OptionsStorage
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
@@ -82,11 +95,17 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                     "1"
                 ) // TODO this could be inserted also on resume (or done some other way, this is a bit temporary)
             split.addAll(filteredText.split(" "))
-            // TODO: what to split on could come from settings
 
             var index: Int by remember { mutableIntStateOf(0) }
-            LaunchedEffect(index) {
+            var pause: Boolean by remember { mutableStateOf(false) }
+            var scroll: Boolean by remember { mutableStateOf(false) }
+            val scrollPosition: LazyListState by remember { mutableStateOf(LazyListState(0)) }
+            val coroutineScope = rememberCoroutineScope()
+            LaunchedEffect(index, pause) {
                 if (index >= split.size - 1) {
+                    return@LaunchedEffect
+                }
+                if (pause) {
                     return@LaunchedEffect
                 }
                 if (optionsStorage.longerWordsMoreTime) {
@@ -99,11 +118,83 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 }
                 index++
             }
-            Text(
-                split[index],
-                Modifier.padding(16.dp),
-                fontSize = optionsStorage.fontSize
-            ) // TODO: Font size could be from settings
+            if (scroll) {
+                LazyRow(state = scrollPosition) {
+                    items(split.size) { i ->
+                        Text(
+                            split[i],
+                            Modifier.padding(16.dp),
+                            fontSize = optionsStorage.fontSize
+                        ) // TODO: Font size could be from settings
+                    }
+                }
+            } else {
+                Text(
+                    split[index],
+                    Modifier.padding(16.dp),
+                    fontSize = optionsStorage.fontSize
+                ) // TODO: Font size could be from settings
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Button(
+                    onClick = {
+                        index = max(0, index - 1)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ChevronLeft,
+                        contentDescription = "Pause",
+                    )
+                }
+                Button(
+                    onClick = {
+                        if (!scroll) {
+                            pause = !pause
+                        }
+                    },
+                ) {
+                    if (pause) {
+                        Icon(
+                            imageVector = Icons.Filled.PlayArrow,
+                            contentDescription = "Play",
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Pause,
+                            contentDescription = "Pause",
+                        )
+                    }
+                }
+                Button(
+                    onClick = {
+                        index = min(split.size - 1, index + 1)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = "Pause",
+                    )
+                }
+            }
+            Button(
+                onClick = {
+                    scroll = !scroll
+                    if (scroll) {
+                        pause = true
+                        coroutineScope.launch {
+                            scrollPosition.scrollToItem(index)
+                        }
+                    } else {
+                        index = scrollPosition.firstVisibleItemIndex
+                    }
+                },
+            ) {
+                if (scroll) {
+                    Text("Normal mode")
+                } else {
+                    Text("Scroll mode")
+                }
+            }
 
         }
     }

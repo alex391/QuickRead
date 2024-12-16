@@ -57,19 +57,10 @@ fun ImportText(
                 text,
                 modifier = Modifier
                     .fillMaxHeight(0.5f)
-                    .fillMaxWidth(1f), // TODO: actually center
+                    .fillMaxWidth(1f),
                 onValueChange = updateText,
                 label = {
                     Text("Paste your text here")
-                }
-            )
-            TextField(
-                "",
-                modifier = Modifier
-                    .fillMaxWidth(1f), // TODO: actually center
-                onValueChange = {/* TODO: Store state for later */ },
-                label = {
-                    Text("Or paste a URL here")
                 }
             )
             Button(

@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             var optionsStorage: OptionsStorage by remember { mutableStateOf(OptionsStorage()) } // TODO: persistent storage
             var readText by remember { mutableStateOf("") }
+            // TODO: keep track of text position if you're going to the settings and back to the reading (so you don't loose your place)
             NavHost(
                 navController = navController,
                 startDestination = ImportText,
