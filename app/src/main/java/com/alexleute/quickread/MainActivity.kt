@@ -5,6 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -33,11 +37,19 @@ class MainActivity : ComponentActivity() {
                 startDestination = ImportText,
             ) {
                 composable<ImportText> {
-                    ImportText(startReading = {
-                        navController.navigate(Read("Lorem ipsum your princess is in another castle")) // TODO should be the text from the textbox instead
-                    }, options = {
-                        navController.navigate(Options)
-                    })
+                    var readText by remember { mutableStateOf("") }
+                    ImportText(
+                        startReading = {
+                            navController.navigate(Read(readText)) // TODO should be the text from the textbox instead
+                        },
+                        options = {
+                            navController.navigate(Options)
+                        },
+                        text = readText,
+                        updateText = {
+                            readText = it
+                        }
+                    )
                 }
                 composable<Read> {
                     val args = it.toRoute<Read>()

@@ -23,7 +23,12 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImportText(startReading: () -> Unit, options: () -> Unit) {
+fun ImportText(
+    startReading: () -> Unit,
+    options: () -> Unit,
+    text: String,
+    updateText: (text: String) -> Unit
+) {
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -49,11 +54,11 @@ fun ImportText(startReading: () -> Unit, options: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
-                "",
+                text,
                 modifier = Modifier
                     .fillMaxHeight(0.5f)
                     .fillMaxWidth(1f), // TODO: actually center
-                onValueChange = {/* TODO: change value */ },
+                onValueChange = updateText,
                 label = {
                     Text("Paste your text here")
                 }
@@ -68,7 +73,7 @@ fun ImportText(startReading: () -> Unit, options: () -> Unit) {
                 }
             )
             Button(
-                onClick = { startReading() },
+                onClick = startReading,
                 content = {
                     Text("Start reading!")
                 }

@@ -74,13 +74,15 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            val split: MutableList<String> =
-//                mutableListOf(
-//                    "3",
-//                    "2",
-//                    "1"
-//                ) // TODO this could be inserted also on resume
-            val split = text.split(" ")
+            // Remove control characters, they're jarring to have on the screen:
+            val filteredText = text.replace(regex = Regex("\\p{Cc}"), replacement = " ")
+            val split: MutableList<String> =
+                mutableListOf(
+                    "3",
+                    "2",
+                    "1"
+                ) // TODO this could be inserted also on resume
+            split.addAll(filteredText.split(" "))
             // TODO: what to split on could come from settings
 
             var index: Int by remember { mutableIntStateOf(0) }
