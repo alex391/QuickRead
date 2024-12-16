@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.alexleute.quickread.OptionsStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
@@ -43,6 +44,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,16 +126,16 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                         Text(
                             split[i],
                             Modifier.padding(16.dp),
-                            fontSize = optionsStorage.fontSize
-                        ) // TODO: Font size could be from settings
+                            fontSize = optionsStorage.fontSize.sp
+                        )
                     }
                 }
             } else {
                 Text(
                     split[index],
                     Modifier.padding(16.dp),
-                    fontSize = optionsStorage.fontSize
-                ) // TODO: Font size could be from settings
+                    fontSize = optionsStorage.fontSize.sp
+                )
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(

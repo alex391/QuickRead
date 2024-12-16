@@ -22,7 +22,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.sp
 import com.alexleute.quickread.OptionsStorage
 import kotlin.math.min
 import kotlin.time.Duration
@@ -76,12 +75,12 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text("Font Size: ")
                 TextField(
-                    value = optionsStorage.fontSize.value.toInt().toString(),
+                    value = optionsStorage.fontSize.toString(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
                         try {
                             val newOptionsStorage =
-                                optionsStorage.copy(fontSize = min(it.toInt(), 120).sp)
+                                optionsStorage.copy(fontSize = min(it.toInt(), 120))
                             save(newOptionsStorage)
                         } catch (n: NumberFormatException) {
                             /* no-op */ // Just don't crash
