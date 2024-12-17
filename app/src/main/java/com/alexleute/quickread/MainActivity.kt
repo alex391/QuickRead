@@ -46,7 +46,11 @@ data class OptionsStorage(
 )
 
 suspend fun readOptionsFromFlow(flow: Flow<String>): OptionsStorage {
-    return Json.decodeFromString(flow.first())
+    return try {
+        Json.decodeFromString(flow.first())
+    } catch (_: Exception) {
+        OptionsStorage()
+    }
 }
 
 
