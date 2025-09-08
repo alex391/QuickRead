@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.alexleute.quickread.OptionsStorage
 import kotlin.math.min
+import kotlin.math.round
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -61,7 +62,8 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
         ) {
             var wpm: Float =
                 msToWpm(optionsStorage.delay.inWholeMilliseconds.toFloat())
-            Text("Words Per Minute: $wpm")
+            val roundedWpm: Int = round(wpm).toInt()
+            Text("Words Per Minute: $roundedWpm")
             Slider(
                 value = wpm,
                 onValueChange = {

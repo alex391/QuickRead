@@ -145,7 +145,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronLeft,
-                        contentDescription = "Pause",
+                        contentDescription = "Left",
                     )
                 }
                 Button(
@@ -174,7 +174,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
-                        contentDescription = "Pause",
+                        contentDescription = "Right",
                     )
                 }
             }
