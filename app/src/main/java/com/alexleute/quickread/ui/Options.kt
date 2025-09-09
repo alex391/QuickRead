@@ -20,9 +20,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.alexleute.quickread.OptionsStorage
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
 import kotlin.time.Duration
@@ -60,19 +66,31 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
                 .padding(innerPadding)
                 .fillMaxSize(),
         ) {
-            var wpm: Float =
-                msToWpm(optionsStorage.delay.inWholeMilliseconds.toFloat())
+            val minWpm = 50.0
+            val maxWpm = 1200.0
+            var wpm: Double =
+                usToWpm(optionsStorage.delay.inWholeMicroseconds) // Need to this with more precision than ms because for large WPMs the duration difference is less than 1ms
+            var sliderPosition: Float by remember { mutableFloatStateOf(0.0f) }
+            sliderPosition = scaleRangeToSlider(wpm, minWpm, maxWpm)
+            sliderPosition =
+                min(max(sliderPosition, 0f), 1f) // For sanity, but probably does nothing
             val roundedWpm: Int = round(wpm).toInt()
             Text("Words Per Minute: $roundedWpm")
             Slider(
-                value = wpm,
+                modifier = Modifier
+                    .fillMaxWidth(.7f)
+                    .align(alignment = Alignment.CenterHorizontally),
+                value = sliderPosition,
                 onValueChange = {
-                    wpm = it
-                    val delay: Duration = (wpmToMs(wpm)).toDouble().milliseconds
+                    sliderPosition = it
+                    wpm = scaleSliderToRange(sliderPosition, minWpm, maxWpm)
+                    val ms: Double = wpmToMs(wpm)
+                    val delay: Duration = ms.milliseconds
+
                     val newOptionsStorage = optionsStorage.copy(delay = delay)
                     save(newOptionsStorage)
                 },
-                valueRange = 50f..1200f
+                valueRange = 0f..1f
             )
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text("Font Size: ")
@@ -84,7 +102,7 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
                             val newOptionsStorage =
                                 optionsStorage.copy(fontSize = min(it.toInt(), 120))
                             save(newOptionsStorage)
-                        } catch (n: NumberFormatException) {
+                        } catch (_: NumberFormatException) {
                             /* no-op */ // Just don't crash
                         }
                     })
@@ -103,10 +121,26 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
     }
 }
 
-fun msToWpm(ms: Float): Float {
-    return 1f / (ms * (1f / 1000f) * (1f / 60f))
+fun usToWpm(us: Long): Double {
+    return (1.0 / us) * 6e7
 }
 
-fun wpmToMs(wpm: Float): Float {
-    return 1f / (wpm * (1f / 60f) * (1f / 1000f))
+fun wpmToMs(wpm: Double): Double {
+    return (1.0 / (wpm * (1.0 / 60.0) * (1.0 / 1000.0)))
 }
+
+/**
+ * sliderPosition 0 maps to min, sliderPosition 1 maps to max
+ */
+fun scaleSliderToRange(sliderPosition: Float, min: Double, max: Double): Double {
+    return (sliderPosition * (max - min)) + min
+}
+
+/**
+ * Scale a number in a range, to float between 0 and 1
+ */
+fun scaleRangeToSlider(valueInRange: Double, min: Double, max: Double): Float {
+    val movedDown = valueInRange - min
+    return (movedDown / (max - min)).toFloat()
+}
+
