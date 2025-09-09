@@ -124,8 +124,8 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 LazyRow(state = scrollPosition) {
                     items(split.size) { i ->
                         Text(
-                            split[i],
-                            Modifier.padding(16.dp),
+                            split[i] + " ",
+                            Modifier.padding(bottom = 16.dp, top = 16.dp),
                             fontSize = optionsStorage.fontSize.sp
                         )
                     }
