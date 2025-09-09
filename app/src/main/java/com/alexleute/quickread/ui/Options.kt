@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,6 +76,12 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
             sliderPosition =
                 min(max(sliderPosition, 0f), 1f) // For sanity, but probably does nothing
             val roundedWpm: Int = round(wpm).toInt()
+
+            var fontSizeText: String? by remember { mutableStateOf(null) }
+            if (fontSizeText == null) {
+                fontSizeText = optionsStorage.fontSize.toString()
+            }
+
             Text("Words Per Minute: $roundedWpm")
             Slider(
                 modifier = Modifier
@@ -95,15 +102,16 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text("Font Size: ")
                 TextField(
-                    value = optionsStorage.fontSize.toString(),
+                    value = fontSizeText ?: "",
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = {
                         try {
+                            fontSizeText = it
                             val newOptionsStorage =
-                                optionsStorage.copy(fontSize = min(it.toInt(), 120))
+                                optionsStorage.copy(fontSize = max(5, min(it.toInt(), 120)))
                             save(newOptionsStorage)
                         } catch (_: NumberFormatException) {
-                            /* no-op */ // Just don't crash
+                            fontSizeText = it
                         }
                     })
             }
