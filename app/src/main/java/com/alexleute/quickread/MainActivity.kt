@@ -40,9 +40,9 @@ object Read
 
 @Serializable
 data class OptionsStorage(
-    var delay: Duration = 0.2.seconds,
-    var fontSize: Int = 60,
-    var longerWordsMoreTime: Boolean = false
+    val delay: Duration = 0.2.seconds,
+    val fontSize: Int = 60,
+    val longerWordsMoreTime: Boolean = false
 )
 
 suspend fun readOptionsFromFlow(flow: Flow<String>): OptionsStorage {
