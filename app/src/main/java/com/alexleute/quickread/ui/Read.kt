@@ -112,7 +112,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 }
                 if (optionsStorage.longerWordsMoreTime) {
                     val scale: Double =
-                        split[index].length.toDouble() / 6.0 // Average word length is around 6
+                        split[index].length.toDouble() / 6.0 // Average word length is around 6 [citation needed]
                     val scaledDelay: Duration = optionsStorage.delay.times(scale = scale)
                     delay(scaledDelay.toJavaDuration())
                 } else {
@@ -150,6 +150,11 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 }
                 Button(
                     onClick = {
+                        if (!pause) {
+                            // save your place when you pause
+                            val newOptionsStorage = optionsStorage.copy(index = index)
+                            // save(newOptionsStorage)
+                        }
                         if (!scroll) {
                             pause = !pause
                         }

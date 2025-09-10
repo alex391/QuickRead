@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -18,6 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import com.alexleute.quickread.ui.ImportText
 import com.alexleute.quickread.ui.Options
 import com.alexleute.quickread.ui.Read
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -42,7 +46,9 @@ object Read
 data class OptionsStorage(
     val delay: Duration = 0.2.seconds,
     val fontSize: Int = 60,
-    val longerWordsMoreTime: Boolean = false
+    val longerWordsMoreTime: Boolean = false,
+    val index: Int = 0,
+    val text: String = "",
 )
 
 suspend fun readOptionsFromFlow(flow: Flow<String>): OptionsStorage {
@@ -53,6 +59,18 @@ suspend fun readOptionsFromFlow(flow: Flow<String>): OptionsStorage {
     }
 }
 
+fun save(
+    optionsStorage: OptionsStorage,
+    coroutineScope: CoroutineScope,
+    dataStore: DataStore<Preferences>
+) {
+    coroutineScope.launch {
+        dataStore.edit { preferences ->
+            val optionsKey = stringPreferencesKey("options")
+            preferences[optionsKey] = Json.encodeToString(optionsStorage)
+        }
+    }
+}
 
 class MainActivity : ComponentActivity() {
     private val dataStore by preferencesDataStore(name = "options")
@@ -102,15 +120,10 @@ class MainActivity : ComponentActivity() {
                     val coroutineScope = rememberCoroutineScope()
                     Options(back = {
                         navController.popBackStack()
-                    }, optionsStorage, save = {
+                    }, optionsStorage) {
                         optionsStorage = it
-                        coroutineScope.launch {
-                            dataStore.edit { preferences ->
-                                val optionsKey = stringPreferencesKey("options")
-                                preferences[optionsKey] = Json.encodeToString(optionsStorage)
-                            }
-                        }
-                    })
+                        save(optionsStorage, coroutineScope, dataStore)
+                    }
                 }
             }
         }
