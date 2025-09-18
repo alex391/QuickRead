@@ -48,7 +48,20 @@ import kotlin.time.toJavaDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: OptionsStorage) {
+fun Read(
+    text: String,
+    back: () -> Unit,
+    options: () -> Unit,
+    optionsStorage: OptionsStorage,
+    save: (OptionsStorage) -> Unit
+) {
+    /**
+    Saves your place when you pause, play, change modes, or move left and right.
+     */
+    fun savePlace(index: Int) {
+        val newOptionsStorage = optionsStorage.copy(index = index)
+        save(newOptionsStorage)
+    }
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
@@ -98,16 +111,24 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 ) // TODO this could be inserted also on resume (or done some other way, this is a bit temporary)
             split.addAll(filteredText.split(" "))
 
-            var index: Int by remember { mutableIntStateOf(0) }
-            var pause: Boolean by remember { mutableStateOf(false) }
+            var index: Int by remember {
+                mutableIntStateOf(
+                    if (optionsStorage.index >= split.size) {
+                        0 // usually unreachable
+                    } else {
+                        optionsStorage.index
+                    }
+                )
+            }
+            var pause: Boolean by remember { mutableStateOf(true) }
             var scroll: Boolean by remember { mutableStateOf(false) }
             val scrollPosition: LazyListState by remember { mutableStateOf(LazyListState(0)) }
             val coroutineScope = rememberCoroutineScope()
             LaunchedEffect(index, pause) {
-                if (index >= split.size - 1) {
+                if (pause) {
                     return@LaunchedEffect
                 }
-                if (pause) {
+                if (index >= split.size - 1) {
                     return@LaunchedEffect
                 }
                 if (optionsStorage.longerWordsMoreTime) {
@@ -141,6 +162,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 Button(
                     onClick = {
                         index = max(0, index - 1)
+                        savePlace(index)
                     },
                 ) {
                     Icon(
@@ -150,14 +172,10 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 }
                 Button(
                     onClick = {
-                        if (!pause) {
-                            // save your place when you pause
-                            val newOptionsStorage = optionsStorage.copy(index = index)
-                            // save(newOptionsStorage)
-                        }
                         if (!scroll) {
                             pause = !pause
                         }
+                        savePlace(index)
                     },
                 ) {
                     if (pause) {
@@ -175,6 +193,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                 Button(
                     onClick = {
                         index = min(split.size - 1, index + 1)
+                        savePlace(index)
                     },
                 ) {
                     Icon(
@@ -194,6 +213,7 @@ fun Read(text: String, back: () -> Unit, options: () -> Unit, optionsStorage: Op
                     } else {
                         index = scrollPosition.firstVisibleItemIndex
                     }
+                    savePlace(index)
                 },
             ) {
                 if (scroll) {

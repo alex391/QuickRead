@@ -21,7 +21,6 @@ import com.alexleute.quickread.ui.ImportText
 import com.alexleute.quickread.ui.Options
 import com.alexleute.quickread.ui.Read
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -47,8 +46,8 @@ data class OptionsStorage(
     val delay: Duration = 0.2.seconds,
     val fontSize: Int = 60,
     val longerWordsMoreTime: Boolean = false,
+    val text: String = "", // When this is cleared, set index to 0 also
     val index: Int = 0,
-    val text: String = "",
 )
 
 suspend fun readOptionsFromFlow(flow: Flow<String>): OptionsStorage {
@@ -88,13 +87,17 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             var optionsStorage: OptionsStorage by remember { mutableStateOf(tempOptionsStorage) }
-            var readText by remember { mutableStateOf("") }
-            // TODO: keep track of text position if you're going to the settings and back to the reading (so you don't loose your place)
+            var readText by remember { mutableStateOf(optionsStorage.text) }
+            if (BuildConfig.DEBUG && readText == "") {
+                readText =
+                    "Aliquam commodo aliquet ultrices. Nulla varius elit tincidunt mi feugiat molestie. Suspendisse at dui id enim bibendum mattis. Sed eu. "
+            }
             NavHost(
                 navController = navController,
                 startDestination = ImportText,
             ) {
                 composable<ImportText> {
+                    val coroutineScope = rememberCoroutineScope()
                     ImportText(
                         startReading = {
                             navController.navigate(Read)
@@ -105,16 +108,22 @@ class MainActivity : ComponentActivity() {
                         text = readText,
                         updateText = {
                             readText = it
+                            optionsStorage = optionsStorage.copy(text = readText)
+                            save(optionsStorage, coroutineScope, dataStore)
                         }
                     )
                 }
                 composable<Read> {
+                    val coroutineScope = rememberCoroutineScope()
                     Read(
                         text = readText,
                         back = { navController.popBackStack() },
                         options = { navController.navigate(Options) },
                         optionsStorage = optionsStorage
-                    )
+                    ) {
+                        optionsStorage = it
+                        save(optionsStorage, coroutineScope, dataStore)
+                    }
                 }
                 composable<Options> {
                     val coroutineScope = rememberCoroutineScope()
