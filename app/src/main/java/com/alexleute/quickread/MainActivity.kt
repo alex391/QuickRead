@@ -108,8 +108,10 @@ class MainActivity : ComponentActivity() {
                         text = readText,
                         updateText = {
                             readText = it
-                            optionsStorage = optionsStorage.copy(text = readText)
-                            save(optionsStorage, coroutineScope, dataStore)
+                            if (optionsStorage.text != readText) {
+                                optionsStorage = optionsStorage.copy(text = readText, index = 0)
+                                save(optionsStorage, coroutineScope, dataStore)
+                            }
                         }
                     )
                 }
