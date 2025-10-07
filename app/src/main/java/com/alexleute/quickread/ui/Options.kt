@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import com.alexleute.quickread.OptionsStorage
 import kotlin.math.max
 import kotlin.math.min
@@ -51,7 +53,12 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStorage) -> Unit) {
+fun Options(
+    back: () -> Unit,
+    about: () -> Unit,
+    optionsStorage: OptionsStorage,
+    save: (OptionsStorage) -> Unit
+) {
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CenterAlignedTopAppBar(
@@ -64,9 +71,10 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
             actions = {
             },
             navigationIcon = {
-                IconButton(onClick = {
-                    back()
-                }) {
+                IconButton(
+                    onClick =
+                        back
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Settings"
@@ -79,6 +87,7 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .padding(10.dp)
                 .fillMaxSize(),
         ) {
             val minWpm = 50.0
@@ -138,6 +147,9 @@ fun Options(back: () -> Unit, optionsStorage: OptionsStorage, save: (OptionsStor
                         save(newOptionsStorage)
                     },
                 )
+            }
+            Button(onClick = about) {
+                Text("About")
             }
         }
     }

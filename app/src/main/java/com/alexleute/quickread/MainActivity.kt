@@ -31,6 +31,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.alexleute.quickread.ui.About
 import com.alexleute.quickread.ui.ImportText
 import com.alexleute.quickread.ui.Options
 import com.alexleute.quickread.ui.Read
@@ -54,6 +55,9 @@ object Options
 
 @Serializable
 object Read
+
+@Serializable
+object About
 
 @Serializable
 data class OptionsStorage(
@@ -145,10 +149,20 @@ class MainActivity : ComponentActivity() {
                     val coroutineScope = rememberCoroutineScope()
                     Options(back = {
                         navController.popBackStack()
+                    }, {
+                        navController.navigate(route = About)
                     }, optionsStorage) {
                         optionsStorage = it
                         save(optionsStorage, coroutineScope, dataStore)
                     }
+                }
+                composable<About> {
+                    About(
+                        back = {
+                            navController.popBackStack()
+                        },
+                        options = { navController.navigate(Options) },
+                    )
                 }
             }
         }
