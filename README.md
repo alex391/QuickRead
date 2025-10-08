@@ -5,7 +5,7 @@ Similar to the app Spreeder, or Kindle's Word Runner
 
 ## Demo
 
-<img src="demo.gif" alt="An animated demo of this app" width="800" style="width: 50%">
+<img src="demo.gif" alt="An animated demo of this app" width="800" height="1778" style="width: 25%">
 
 ## License
 
