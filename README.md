@@ -1,7 +1,6 @@
 # QuickRead
 
-A way to read faster than normal [subvocalization](https://en.wikipedia.org/wiki/Subvocalization).  
-Similar to the app Spreeder, or Kindle's Word Runner
+An Android app that helps you read faster by guiding you through the text one word at a time. Similar to the app Spreeder, or Kindle's Word Runner
 
 ## Demo
 
